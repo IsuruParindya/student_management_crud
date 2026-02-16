@@ -1,0 +1,211 @@
+/* Background */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+/* Center Container (Default) */
+.container {
+    max-width: 1300px;
+    margin: 60px auto;
+    padding: 25px;
+}
+
+/* Card Style */
+.card {
+    background: #ffffff;
+    padding: 45px;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+
+/* Heading */
+h1 {
+    margin-top: 0;
+    color: #1e3c72;
+    text-align: center;
+    font-size: 28px;
+}
+
+/* Links (clean) */
+a {
+    text-decoration: none;
+}
+
+
+/* =========================
+   FORMS (add.php / edit.php)
+========================= */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #2a5298;
+    outline: none;
+    box-shadow: 0 0 6px rgba(42,82,152,0.3);
+}
+
+/* Buttons */
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background: #2a5298;
+}
+
+.btn-secondary {
+    background: #ccc;
+    color: #333;
+    padding: 12px 18px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: #b3b3b3;
+}
+
+/* Error Box */
+.error-box {
+    background: #ffe6e6;
+    color: #cc0000;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+
+/* =========================
+   INDEX PAGE (TABLE)
+========================= */
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-row h1 {
+    text-align: left;
+    margin: 0;
+}
+
+/* Table Wrapper */
+.table-wrapper {
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+/* Header */
+thead {
+    background: #1e3c72;
+    color: white;
+}
+
+th {
+    padding: 16px 18px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+/* Cells */
+td {
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+/* Row hover */
+tbody tr:hover {
+    background: #f4f8ff;
+}
+
+/* No data row */
+.no-data {
+    text-align: center;
+    padding: 22px;
+    color: #777;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Edit button */
+.btn-edit {
+    background: #2a5298;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.btn-edit:hover {
+    background: #1e3c72;
+}
+
+/* Delete button */
+.btn-delete {
+    background: #d9534f;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.btn-delete:hover {
+    background: #b52b27;
+}
