@@ -24,7 +24,7 @@ $student = $result->fetch_assoc();
 $stmt->close();
 
 if (!$student) {
-    die("Student not found or you don't have permission.");
+    die("Student not found or no permission.");
 }
 ?>
 <!DOCTYPE html>
@@ -85,13 +85,13 @@ if (!$student) {
                 <input type="text" name="enrolledYear" value="<?= e($student['enrolledYear']) ?>">
             </div>
 
-            <!-- createdBy should NOT be editable; force Parindya -->
             <input type="hidden" name="createdBy" value="<?= e($MY_NAME) ?>">
 
             <div class="button-group">
                 <button type="submit" class="btn-primary">Update Student</button>
                 <a href="index.php" class="btn-secondary">Back</a>
             </div>
+
         </form>
 
     </div>
@@ -99,4 +99,5 @@ if (!$student) {
 
 </body>
 </html>
+
 <?php $conn->close(); ?>

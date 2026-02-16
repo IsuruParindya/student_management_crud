@@ -17,8 +17,9 @@ $course    = "BSc.IT";
 $year      = 2022;
 $createdBy = $MY_NAME;
 
-// Count ONLY your records
 $checkStmt = $conn->prepare("SELECT COUNT(*) AS total FROM student WHERE createdBy = ?");
+if (!$checkStmt) die("Prepare failed: " . $conn->error);
+
 $checkStmt->bind_param("s", $MY_NAME);
 $checkStmt->execute();
 $countRes = $checkStmt->get_result()->fetch_assoc();
@@ -27,30 +28,31 @@ $checkStmt->close();
 $total = (int)($countRes["total"] ?? 0);
 
 if ($total === 0) {
-    // Insert default row for you
+
     $stmt = $conn->prepare("
         INSERT INTO student
         (studentID, firstName, lastName, birthDate, email, city, courseName, enrolledYear, createdBy)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    if ($stmt) {
-        $stmt->bind_param(
-            "sssssssis",
-            $defaultID,
-            $firstName,
-            $lastName,
-            $birthDate,
-            $email,
-            $city,
-            $course,
-            $year,
-            $createdBy
-        );
-        $stmt->execute();
-        $stmt->close();
-    }
+    if (!$stmt) die("Prepare failed: " . $conn->error);
+
+    $stmt->bind_param(
+        "sssssssis",
+        $defaultID,
+        $firstName,
+        $lastName,
+        $birthDate,
+        $email,
+        $city,
+        $course,
+        $year,
+        $createdBy
+    );
+    $stmt->execute();
+    $stmt->close();
+
 } else {
-    // Fix bad ID only on YOUR rows
+
     $fix = $conn->prepare("
         UPDATE student
         SET studentID = ?
@@ -58,23 +60,36 @@ if ($total === 0) {
           AND (studentID = '0' OR studentID = '' OR studentID IS NULL)
         LIMIT 1
     ");
+
     if ($fix) {
         $fix->bind_param("ss", $defaultID, $MY_NAME);
         $fix->execute();
         $fix->close();
     }
+
+    $fixCourse = $conn->prepare("
+        UPDATE student
+        SET courseName = ?
+        WHERE createdBy = ?
+          AND (courseName = '0' OR courseName = '' OR courseName IS NULL)
+        LIMIT 1
+    ");
+    if ($fixCourse) {
+        $fixCourse->bind_param("ss", $course, $MY_NAME);
+        $fixCourse->execute();
+        $fixCourse->close();
+    }
 }
 
-// Fetch ONLY your rows
-$listStmt = $conn->prepare("
+$myNameEsc = $conn->real_escape_string($MY_NAME);
+
+$sql = "
     SELECT studentID, firstName, lastName, birthDate, email, city, courseName, enrolledYear, createdBy
     FROM student
-    WHERE createdBy = ?
-    ORDER BY CAST(studentID AS UNSIGNED) ASC
-");
-$listStmt->bind_param("s", $MY_NAME);
-$listStmt->execute();
-$result = $listStmt->get_result();
+    ORDER BY (createdBy = '$myNameEsc') DESC, CAST(studentID AS UNSIGNED) ASC, studentID ASC
+";
+
+$result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
 <html>
@@ -121,13 +136,18 @@ $result = $listStmt->get_result();
                             <td><?= e($row['courseName']) ?></td>
                             <td><?= e($row['enrolledYear']) ?></td>
                             <td><?= e($row['createdBy']) ?></td>
+
                             <td class="action-buttons">
-                                <a href="edit.php?id=<?= e($row['studentID']) ?>" class="btn-edit">Edit</a>
-                                <a href="delete.php?id=<?= e($row['studentID']) ?>"
-                                   class="btn-delete"
-                                   onclick="return confirm('Delete this student?');">
-                                   Delete
-                                </a>
+                                <?php if ((string)$row['createdBy'] === (string)$MY_NAME): ?>
+                                    <a href="edit.php?id=<?= urlencode($row['studentID']) ?>" class="btn-edit">Edit</a>
+                                    <a href="delete.php?id=<?= urlencode($row['studentID']) ?>"
+                                       class="btn-delete"
+                                       onclick="return confirm('Delete this student?');">
+                                       Delete
+                                    </a>
+                                <?php else: ?>
+                                    <span style="color:#999; font-style:italic;">No Permission</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -146,7 +166,4 @@ $result = $listStmt->get_result();
 
 </body>
 </html>
-<?php
-$listStmt->close();
-$conn->close();
-?>
+<?php $conn->close(); ?>

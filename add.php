@@ -23,46 +23,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $city         = clean($_POST["city"] ?? "");
     $courseName   = clean($_POST["courseName"] ?? "");
     $enrolledYear = clean($_POST["enrolledYear"] ?? "");
-
-    $createdBy = $MY_NAME;
+    $createdBy    = $MY_NAME;
 
     if (!$studentID) $errors[] = "Student ID is required.";
     if (!$firstName) $errors[] = "First Name is required.";
     if (!$lastName)  $errors[] = "Last Name is required.";
 
-    if ($studentID && !preg_match('/^(BSIT)?\d{4,10}$/i', $studentID)) {
-        $errors[] = "Student ID format invalid. Example:221004";
-    }
-
     if (empty($errors)) {
 
-        // Prevent duplicate ID
-        $check = $conn->prepare("SELECT studentID FROM student WHERE studentID=?");
-        $check->bind_param("s", $studentID);
+        $check = $conn->prepare("SELECT 1 FROM student WHERE studentID = ? AND createdBy = ? LIMIT 1");
+        $check->bind_param("ss", $studentID, $createdBy);
         $check->execute();
-        $exists = $check->get_result()->fetch_assoc();
+        $exists = $check->get_result()->num_rows > 0;
         $check->close();
 
         if ($exists) {
-            $errors[] = "This Student ID already exists.";
+            $errors[] = "This Student ID already exists for your records.";
         } else {
-
             $stmt = $conn->prepare(
                 "INSERT INTO student
-                (studentID, firstName, lastName, birthDate, email, city, courseName, enrolledYear, createdBy)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                 (studentID, firstName, lastName, birthDate, email, city, courseName, enrolledYear, createdBy)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
 
             if (!$stmt) {
                 $errors[] = "Database error: " . $conn->error;
             } else {
+                $yearInt = ($enrolledYear === null) ? null : (int)$enrolledYear;
+
                 $stmt->bind_param(
                     "sssssssis",
                     $studentID, $firstName, $lastName, $birthDate,
-                    $email, $city, $courseName, $enrolledYear, $createdBy
+                    $email, $city, $courseName, $yearInt, $createdBy
                 );
 
                 if ($stmt->execute()) {
+                    $stmt->close();
+                    $conn->close();
                     header("Location: index.php");
                     exit;
                 } else {

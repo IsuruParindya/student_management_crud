@@ -6,7 +6,6 @@ $MY_NAME = "Parindya";
 function e($str) {
     return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
 }
-
 function showErrorPage(string $message) {
     ?>
     <!DOCTYPE html>
@@ -21,11 +20,7 @@ function showErrorPage(string $message) {
         <div class="container">
             <div class="card">
                 <h1>Delete Failed</h1>
-
-                <div class="error-box">
-                    <?= e($message) ?>
-                </div>
-
+                <div class="error-box"><?= e($message) ?></div>
                 <div class="button-group">
                     <a class="btn-primary" href="index.php">Back to Student List</a>
                 </div>
@@ -53,14 +48,6 @@ if (!$stmt) {
 $stmt->bind_param("ss", $id, $MY_NAME);
 
 if ($stmt->execute()) {
-
-    if ($stmt->affected_rows === 0) {
-        $stmt->close();
-        $conn->close();
-        showErrorPage("Access denied or record not found (you can only delete your own records).");
-        exit;
-    }
-
     $stmt->close();
     $conn->close();
     header("Location: index.php");
@@ -71,4 +58,3 @@ $error = "Delete failed: " . $stmt->error;
 $stmt->close();
 $conn->close();
 showErrorPage($error);
-?>

@@ -7,11 +7,9 @@ function clean($v) {
     $v = trim((string)$v);
     return ($v === '') ? null : $v;
 }
-
 function e($str) {
     return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
 }
-
 function showErrorPage(array $errors, string $backId) {
     ?>
     <!DOCTYPE html>
@@ -26,7 +24,6 @@ function showErrorPage(array $errors, string $backId) {
         <div class="container">
             <div class="card">
                 <h1>Update Failed</h1>
-
                 <div class="error-box">
                     <ul>
                         <?php foreach ($errors as $er): ?>
@@ -34,7 +31,6 @@ function showErrorPage(array $errors, string $backId) {
                         <?php endforeach; ?>
                     </ul>
                 </div>
-
                 <div class="button-group">
                     <a class="btn-primary" href="edit.php?id=<?= urlencode($backId) ?>">Go Back</a>
                     <a class="btn-secondary" href="index.php">Student List</a>
@@ -46,7 +42,6 @@ function showErrorPage(array $errors, string $backId) {
     <?php
 }
 
-/* ===== Read IDs (string) ===== */
 $oldStudentID = isset($_POST["oldStudentID"]) ? trim((string)$_POST["oldStudentID"]) : "";
 $newStudentID = clean($_POST["studentID"] ?? "");
 
@@ -56,7 +51,6 @@ if ($oldStudentID === "" || !$newStudentID) {
     exit;
 }
 
-/* ===== Read fields ===== */
 $firstName    = clean($_POST["firstName"] ?? "");
 $lastName     = clean($_POST["lastName"] ?? "");
 $birthDate    = clean($_POST["birthDate"] ?? "");
@@ -64,11 +58,8 @@ $email        = clean($_POST["email"] ?? "");
 $city         = clean($_POST["city"] ?? "");
 $courseName   = clean($_POST["courseName"] ?? "");
 $enrolledYear = clean($_POST["enrolledYear"] ?? "");
+$createdBy    = $MY_NAME;
 
-/* createdBy is FORCED (ignore any posted value) */
-$createdBy = $MY_NAME;
-
-/* ===== Validation ===== */
 $errors = [];
 if (!$firstName) $errors[] = "First Name is required.";
 if (!$lastName)  $errors[] = "Last Name is required.";
@@ -79,47 +70,27 @@ if (!empty($errors)) {
     exit;
 }
 
-/* ===== Permission check: ensure this oldStudentID belongs to Parindya ===== */
-$perm = $conn->prepare("SELECT 1 FROM student WHERE studentID = ? AND createdBy = ? LIMIT 1");
-if (!$perm) {
-    showErrorPage(["Prepare failed: " . $conn->error], $oldStudentID);
-    $conn->close();
-    exit;
-}
-$perm->bind_param("ss", $oldStudentID, $MY_NAME);
-$perm->execute();
-$permRes = $perm->get_result();
-$allowed = ($permRes && $permRes->num_rows > 0);
-$perm->close();
-
-if (!$allowed) {
-    showErrorPage(["Access denied: You can only update your own records."], $oldStudentID);
-    $conn->close();
-    exit;
-}
-
-/* ===== If ID changed, ensure new ID isn't taken by someone else ===== */
 if ($newStudentID !== $oldStudentID) {
-    $chk = $conn->prepare("SELECT 1 FROM student WHERE studentID = ? LIMIT 1");
+    $chk = $conn->prepare("SELECT 1 FROM student WHERE studentID = ? AND createdBy = ? LIMIT 1");
     if (!$chk) {
         showErrorPage(["Prepare failed: " . $conn->error], $oldStudentID);
         $conn->close();
         exit;
     }
-    $chk->bind_param("s", $newStudentID);
+    $chk->bind_param("ss", $newStudentID, $MY_NAME);
     $chk->execute();
-    $chkRes = $chk->get_result();
-    $exists = ($chkRes && $chkRes->num_rows > 0);
+    $exists = $chk->get_result()->num_rows > 0;
     $chk->close();
 
     if ($exists) {
-        showErrorPage(["Student ID already exists. Choose a different ID."], $oldStudentID);
+        showErrorPage(["Student ID already exists for your records."], $oldStudentID);
         $conn->close();
         exit;
     }
 }
 
-/* ===== Update ONLY your row (createdBy=Parindya) ===== */
+$yearInt = ($enrolledYear === null) ? null : (int)$enrolledYear;
+
 $stmt = $conn->prepare(
     "UPDATE student
      SET studentID=?, firstName=?, lastName=?, birthDate=?, email=?, city=?, courseName=?, enrolledYear=?, createdBy=?
@@ -133,18 +104,9 @@ if (!$stmt) {
 }
 
 $stmt->bind_param(
-    "sssssssssss",
-    $newStudentID,
-    $firstName,
-    $lastName,
-    $birthDate,
-    $email,
-    $city,
-    $courseName,
-    $enrolledYear,
-    $createdBy,
-    $oldStudentID,
-    $MY_NAME
+    "sssssssisss",
+    $newStudentID, $firstName, $lastName, $birthDate, $email, $city, $courseName, $yearInt, $createdBy,
+    $oldStudentID, $MY_NAME
 );
 
 if ($stmt->execute()) {
@@ -158,4 +120,3 @@ $err = "Update failed: " . $stmt->error;
 $stmt->close();
 $conn->close();
 showErrorPage([$err], $oldStudentID);
-?>
