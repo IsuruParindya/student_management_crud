@@ -16,7 +16,6 @@ It also supports a shared-database scenario (batch environment) where:
 - Everyone can **view** all records
 - Only the owner (matching **createdBy**) can **edit/delete** their own records
 
----
 
 ## File Responsibilities
 
@@ -56,8 +55,6 @@ It also supports a shared-database scenario (batch environment) where:
 ### `css/style.css`
 - Shared styling for all pages.
 - Keeps consistent UI design across Add/Edit/Index/Error pages.
-
----
 
 ## Database Setup
 
