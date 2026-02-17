@@ -104,7 +104,7 @@ $result = $conn->query($sql);
     <div class="card">
 
         <div class="header-row">
-            <h1>Student List</h1>
+            <h1>Student Management List</h1>
             <a href="add.php" class="btn-primary">+ Add Student</a>
         </div>
 
@@ -115,7 +115,7 @@ $result = $conn->query($sql);
                         <th>ID</th>
                         <th>Name</th>
                         <th>Birth Date</th>
-                        <th>Email</th>
+                        <th>Student Email</th>
                         <th>City</th>
                         <th>Course</th>
                         <th>Enrolled Year</th>

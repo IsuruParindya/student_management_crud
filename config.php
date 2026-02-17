@@ -1,4 +1,6 @@
 <?php
+// For my database Password: password
+
 $servername = "localhost";
 $username = "artist_bci_users";
 $password = "1TcqitE%fRi9";

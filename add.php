@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <div class="form-group">
                 <label>Student ID *</label>
-                <input type="text" name="studentID" placeholder="e.g. 221004"
+                <input type="text" name="studentID" placeholder="E.g. 221004"
                        value="<?= e($_POST['studentID'] ?? '') ?>" required>
             </div>
 

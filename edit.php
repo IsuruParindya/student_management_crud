@@ -88,7 +88,7 @@ if (!$student) {
             <input type="hidden" name="createdBy" value="<?= e($MY_NAME) ?>">
 
             <div class="button-group">
-                <button type="submit" class="btn-primary">Update Student</button>
+                <button type="submit" class="btn-primary">Update</button>
                 <a href="index.php" class="btn-secondary">Back</a>
             </div>
 
