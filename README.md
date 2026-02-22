@@ -63,7 +63,7 @@ Example:
 - Database name: `artist_bci` (or any name your lecturer gives)
 
 ### 2) Create Table (`student`)
-Run this SQL in phpMyAdmin (XAMPP) or in your hosting database panel:
+Run this SQL in phpMyAdmin (XAMPP) or in your hosting database panel for the Tbale:
 
 ```sql
 CREATE TABLE student (

@@ -105,7 +105,7 @@ $result = $conn->query($sql);
 
         <div class="header-row">
             <h1>Student Management List</h1>
-            <a href="add.php" class="btn-primary">+ Add Student</a>
+            <a href="add.php" class="btn-primary">Add Student</a>
         </div>
 
         <div class="table-wrapper">
